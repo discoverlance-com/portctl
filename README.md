@@ -61,7 +61,7 @@ Find all services currently listening on network ports.
 
 ```bash
 # By Process ID
-portctl kill -process 1234
+portctl kill -pid 1234
 
 # By Port number
 portctl kill -port 3000
@@ -87,7 +87,7 @@ $ portctl kill -help
 Usage of kill:
   -port int
         The port of the running service you want to kill
-  -process int
+  -pid int
         The process id for the running service you want to kill
   -y    Confirmation that you want to kill the process
 ```

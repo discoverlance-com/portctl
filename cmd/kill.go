@@ -12,8 +12,8 @@ import (
 func HandleKillProcessCommand(manager network.PortManager) {
 	killCmd := flag.NewFlagSet("kill", flag.ExitOnError)
 
-	port := killCmd.Int("port", 0, "The port of the running service you want to kill")
-	process := killCmd.Int("process", 0, "The process id for the running service you want to kill")
+	port := killCmd.Int("port", 0, "The Port of the running service you want to kill")
+	process := killCmd.Int("pid", 0, "The Process ID for the running service you want to kill")
 	confirm := killCmd.Bool("y", false, "Confirmation that you want to kill the process")
 
 	killCmd.Parse(os.Args[2:])
