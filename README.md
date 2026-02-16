@@ -73,7 +73,9 @@ portctl kill -port 3000 -y
 
 #### Example Output
 
+![Sample Linux Output](./screenshot-linux.png)
 
+![Sample Windows Output](./screenshot-windows.png)
 
 ## Development
 
