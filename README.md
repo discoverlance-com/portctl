@@ -73,9 +73,31 @@ portctl kill -port 3000 -y
 
 #### Example Output
 
-![Sample Linux Output](./screenshot-linux.png)
+```console
+$ portctl list
 
-![Sample Windows Output](./screenshot-windows.png)
+PORT   PID
+3000   4231
+8080   4971
+```
+
+```console
+$ portctl kill -help
+
+Usage of kill:
+  -port int
+        The port of the running service you want to kill
+  -process int
+        The process id for the running service you want to kill
+  -y    Confirmation that you want to kill the process
+```
+
+```console
+$ portctl kill -port 3000
+
+Are you sure you want to continue? Y/N: y
+Process: 3171 killed successfully
+```
 
 ## Development
 
