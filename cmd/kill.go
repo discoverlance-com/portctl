@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -17,7 +18,13 @@ func HandleKillProcessCommand(manager network.PortManager) {
 	confirm := killCmd.Bool("y", false, "Confirmation that you want to kill the process")
 
 	killCmd.Parse(os.Args[2:])
-	ValidateKillProcessFlags(killCmd, port, process)
+	validateErr := ValidateKillProcessFlags(*port, *process)
+
+	if validateErr != nil {
+		fmt.Fprintln(os.Stderr, validateErr)
+		killCmd.Usage()
+		os.Exit(1)
+	}
 
 	processes, err := manager.ListListeningProcesses()
 
@@ -68,16 +75,14 @@ func HandleKillProcessCommand(manager network.PortManager) {
 	fmt.Printf("Process: %d killed successfully\n", processToKill)
 }
 
-func ValidateKillProcessFlags(cmd *flag.FlagSet, port *int, process *int) {
-	if *port == 0 && *process == 0 {
-		fmt.Fprintln(os.Stderr, "Error: provide at least one flag, -process or -port")
-		cmd.Usage()
-		os.Exit(1)
+func ValidateKillProcessFlags(port int, process int) error {
+	if port == 0 && process == 0 {
+		return errors.New("Error: provide at least one flag, -process or -port")
 	}
 
-	if *port != 0 && *process != 0 {
-		fmt.Fprintln(os.Stderr, "Error: provide only one of the flags, -process or -port")
-		cmd.Usage()
-		os.Exit(1)
+	if port != 0 && process != 0 {
+		return errors.New("Error: provide only one of the flags, -process or -port")
 	}
+
+	return nil
 }
