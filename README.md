@@ -96,7 +96,7 @@ Usage of kill:
 $ portctl kill -port 3000
 
 Are you sure you want to continue? Y/N: y
-Process: 3171 killed successfully
+Process: 4231 killed successfully
 ```
 
 ## Development
