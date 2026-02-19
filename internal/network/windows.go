@@ -9,7 +9,9 @@ import (
 	"github.com/discoverlance-com/portctl/internal/exec"
 )
 
-type WindowsManager struct{}
+type WindowsManager struct {
+	executor WindowsCommandExecutor
+}
 
 func (w WindowsManager) ListListeningProcesses() ([]LocalProcess, error) {
 	script := `
@@ -18,7 +20,7 @@ func (w WindowsManager) ListListeningProcesses() ([]LocalProcess, error) {
 		ConvertTo-Json -Depth 3
 	`
 
-	output, err := exec.RunPowerShellCommand(script)
+	output, err := w.executor.RunPowerShellCommand(script)
 
 	if err != nil {
 		return nil, err
@@ -43,10 +45,10 @@ func (w WindowsManager) ListListeningProcesses() ([]LocalProcess, error) {
 	return unique, nil
 }
 
-func (l WindowsManager) KillProcess(pid int) error {
+func (w WindowsManager) KillProcess(pid int) error {
 	command := fmt.Sprintf("Stop-Process -Id %d -Force -ErrorAction Stop; Write-Output 'OK'", pid)
 
-	output, err := exec.RunPowerShellCommand(command)
+	output, err := w.executor.RunPowerShellCommand(command)
 	if err != nil {
 		return fmt.Errorf("Failed to stop process: %v\nOutput: %s", err, output)
 	}
@@ -54,6 +56,10 @@ func (l WindowsManager) KillProcess(pid int) error {
 	return nil
 }
 
+func NewManagerWithExecutor(executor WindowsCommandExecutor) WindowsManager {
+	return WindowsManager{executor: executor}
+}
+
 func NewManager() PortManager {
-	return WindowsManager{}
+	return NewManagerWithExecutor(&exec.PowershellExecutor{})
 }

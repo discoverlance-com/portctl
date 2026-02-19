@@ -5,15 +5,18 @@ package network
 import (
 	"fmt"
 	"os"
-	"os/exec"
 	"strconv"
 	"strings"
+
+	internalexec "github.com/discoverlance-com/portctl/internal/exec"
 )
 
-type DarwinManager struct{}
+type DarwinManager struct {
+	executor LinuxCommandExecutor
+}
 
 func (d DarwinManager) ListListeningProcesses() ([]LocalProcess, error) {
-	cmd := exec.Command(
+	output, err := d.executor.RunLinuxCommand(
 		"lsof",
 		"-n",
 		"-P",
@@ -22,7 +25,6 @@ func (d DarwinManager) ListListeningProcesses() ([]LocalProcess, error) {
 		"-F", "pn",
 	)
 
-	output, err := cmd.Output()
 	if err != nil {
 		return nil, err
 	}
@@ -33,6 +35,10 @@ func (d DarwinManager) ListListeningProcesses() ([]LocalProcess, error) {
 	var currentPID int
 
 	for _, line := range lines {
+		if len(line) == 0 {
+			continue
+		}
+
 		switch line[0] {
 		case 'p':
 			pid, err := strconv.Atoi(line[1:])
@@ -74,6 +80,10 @@ func (l DarwinManager) KillProcess(pid int) error {
 	return nil
 }
 
+func NewManagerWithExecutor(executor LinuxCommandExecutor) DarwinManager {
+	return DarwinManager{executor: executor}
+}
+
 func NewManager() PortManager {
-	return DarwinManager{}
+	return NewManagerWithExecutor(&internalexec.LinuxShellExecutor{})
 }

@@ -2,7 +2,9 @@ package exec
 
 import "os/exec"
 
-func RunPowerShellCommand(command string) ([]byte, error) {
+type PowershellExecutor struct{}
+
+func (r *PowershellExecutor) RunPowerShellCommand(command string) ([]byte, error) {
 	cmd := exec.Command(
 		"powershell",
 		"-NoProfile",

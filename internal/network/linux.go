@@ -5,18 +5,20 @@ package network
 import (
 	"fmt"
 	"os"
-	"os/exec"
 	"regexp"
 	"strconv"
 	"strings"
+
+	internalexec "github.com/discoverlance-com/portctl/internal/exec"
 )
 
-type LinuxManager struct{}
+type LinuxManager struct {
+	executor LinuxCommandExecutor
+}
 
 func (l LinuxManager) ListListeningProcesses() ([]LocalProcess, error) {
-	cmd := exec.Command("ss", "-ltnp")
+	output, err := l.executor.RunLinuxCommand("ss", "-ltnp")
 
-	output, err := cmd.Output()
 	if err != nil {
 		return nil, err
 	}
@@ -39,6 +41,11 @@ func (l LinuxManager) ListListeningProcesses() ([]LocalProcess, error) {
 
 		address := fields[3] // 0.0.0.0:8080 - local address
 		partsIndex := strings.LastIndex(address, ":")
+
+		if partsIndex < 0 {
+			continue
+		}
+
 		portStr := address[partsIndex+1:]
 
 		port, err := strconv.Atoi(portStr)
@@ -80,6 +87,10 @@ func (l LinuxManager) KillProcess(pid int) error {
 	return nil
 }
 
+func NewManagerWithExecutor(executor LinuxCommandExecutor) LinuxManager {
+	return LinuxManager{executor: executor}
+}
+
 func NewManager() PortManager {
-	return LinuxManager{}
+	return NewManagerWithExecutor(&internalexec.LinuxShellExecutor{})
 }
