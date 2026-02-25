@@ -2,6 +2,15 @@
 
 `portctl` is a lightweight cross platform CLI for identifying and terminating processes listening on network ports without having to remember OS-specific commands like `netstat`, `lsof`, or `taskkill`.
 
+## Project Status
+
+`portctl` is actively being developed and tested.
+
+- CLI commands (`list`, `kill`) are implemented and working across Windows, Linux, and macOS.
+- Unit tests are in place for command flag validation and network process listing logic.
+- Linux and macOS include integration tests for process termination behavior.
+- CI is configured with GitHub Actions for multi-OS test/build and Go lint checks.
+
 ## Key Features
 
 - **True Cross-Platform Support**: Cross-platform support for Windows, Linux and macOS using system native tools.
@@ -28,12 +37,11 @@ go install github.com/discoverlance-com/portctl@latest
 
 #### Build From Source
 
-| Platform | Command |
-| :--- | :--- |
-| Windows | `$env:GOOS="windows"; go build -o portctl.exe main.go` |
-| Linux | `GOOS=linux go build -o portctl main.go` |
-| macOS | `GOOS=darwin go build -o portctl main.go` |
-
+| Platform | Command                                                |
+| :------- | :----------------------------------------------------- |
+| Windows  | `$env:GOOS="windows"; go build -o portctl.exe main.go` |
+| Linux    | `GOOS=linux go build -o portctl main.go`               |
+| macOS    | `GOOS=darwin go build -o portctl main.go`              |
 
 #### Global Access (Optional)
 
@@ -42,12 +50,11 @@ To run the tool from anywhere, move the binary to a folder in your system's PATH
 - Linux/macOS: sudo mv portctl /usr/local/bin/
 - Windows: Move portctl.exe to a folder like C:\bin and add that folder to your Environment Variables.
 
-
 ### Usage Guide
 
 Let's see how we can interact with `portctl`.
 
-#### List Listening Processes 
+#### List Listening Processes
 
 Find all services currently listening on network ports.
 
@@ -55,7 +62,7 @@ Find all services currently listening on network ports.
 portctl list
 ```
 
-#### Kill A Process 
+#### Kill A Process
 
 Find all services currently listening on network ports.
 
@@ -69,7 +76,6 @@ portctl kill -port 3000
 # Force Kill (no prompt)
 portctl kill -port 3000 -y
 ```
-
 
 #### Example Output
 
@@ -106,6 +112,24 @@ This project uses **Go build tags** and **Interfaces** to maintain a clean and t
 - **Build Tags**: OS-specific logic is isolated in `windows.go`, `linux.go`, and `darwin.go` files.
 - **The PortManager Interface**: A `PortManager` interface abstracts platform-specific implementations allowing the CLI commands to remain OS-agnostic.
 
+### Testing
+
+- `cmd/kill_test.go`: validates kill command flag combinations.
+- `internal/network/windows_test.go`: tests Windows network listing behavior.
+- `internal/network/linux_test.go`: tests Linux network listing behavior and Linux kill integration.
+- `internal/network/darwin_test.go`: tests macOS network listing behavior and macOS kill integration.
+
+Run tests locally:
+
+```bash
+go test ./...
+```
+
+### CI Workflows
+
+- **Test Go**: runs test and build checks on Windows, Linux, and macOS.
+- **Lint Go**: runs `golangci-lint` checks.
+
 ## Contributing
 
 Any **Contributions** are greatly **appreciated**. The goal of this project is to remain lightweight and depend primarily on the Go standard library. External dependencies should be justified by significant value or unavoidable complexity.
@@ -117,4 +141,5 @@ Any **Contributions** are greatly **appreciated**. The goal of this project is t
 5. Open a Pull Request.
 
 ## License
+
 Distributed under the MIT License. See [LICENSE](./LICENSE) for more information.
