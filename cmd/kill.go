@@ -17,11 +17,18 @@ func HandleKillProcessCommand(manager network.PortManager) {
 	process := killCmd.Int("pid", 0, "The Process ID for the running service you want to kill")
 	confirm := killCmd.Bool("y", false, "Confirmation that you want to kill the process")
 
-	killCmd.Parse(os.Args[2:])
-	validateErr := ValidateKillProcessFlags(*port, *process)
+	err := killCmd.Parse(os.Args[2:])
 
-	if validateErr != nil {
-		fmt.Fprintln(os.Stderr, validateErr)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error parsing command args: %v\n", err)
+		killCmd.Usage()
+		os.Exit(1)
+	}
+
+	err = ValidateKillProcessFlags(*port, *process)
+
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
 		killCmd.Usage()
 		os.Exit(1)
 	}
@@ -29,7 +36,7 @@ func HandleKillProcessCommand(manager network.PortManager) {
 	processes, err := manager.ListListeningProcesses()
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to list running processes: %v", err)
+		fmt.Fprintf(os.Stderr, "Failed to list running processes: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -70,7 +77,12 @@ func HandleKillProcessCommand(manager network.PortManager) {
 		}
 	}
 
-	manager.KillProcess(processToKill)
+	err = manager.KillProcess(processToKill)
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to kill running process: %v\n", err)
+		os.Exit(1)
+	}
 
 	fmt.Printf("Process: %d killed successfully\n", processToKill)
 }
