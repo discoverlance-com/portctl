@@ -50,7 +50,7 @@ func (w WindowsManager) KillProcess(pid int) error {
 
 	output, err := w.executor.RunPowerShellCommand(command)
 	if err != nil {
-		return fmt.Errorf("Failed to stop process: %v\nOutput: %s", err, output)
+		return fmt.Errorf("failed to stop process: %w\nOutput: %s", err, output)
 	}
 
 	return nil

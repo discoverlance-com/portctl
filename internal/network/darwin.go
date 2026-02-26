@@ -70,11 +70,11 @@ func (l DarwinManager) KillProcess(pid int) error {
 	proc, err := os.FindProcess(pid)
 
 	if err != nil {
-		return fmt.Errorf("Could not find process %d: %w", pid, err)
+		return fmt.Errorf("could not find process %d: %w", pid, err)
 	}
 
 	if err := proc.Kill(); err != nil {
-		return fmt.Errorf("Failed to kill process %d: %w", pid, err)
+		return fmt.Errorf("failed to kill process %d: %w", pid, err)
 	}
 
 	return nil
