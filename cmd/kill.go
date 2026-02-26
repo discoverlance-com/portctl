@@ -89,11 +89,11 @@ func HandleKillProcessCommand(manager network.PortManager) {
 
 func ValidateKillProcessFlags(port int, process int) error {
 	if port == 0 && process == 0 {
-		return errors.New("Error: provide at least one flag, -process or -port")
+		return errors.New("provide at least one flag, -process or -port")
 	}
 
 	if port != 0 && process != 0 {
-		return errors.New("Error: provide only one of the flags, -process or -port")
+		return errors.New("provide only one of the flags, -process or -port")
 	}
 
 	return nil
